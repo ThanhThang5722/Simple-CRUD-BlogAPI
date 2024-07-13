@@ -15,6 +15,10 @@ type Article struct {
 	Content    string `json:"content"`
 	//Status     string`json:"id"`
 }
+type Article_creation struct {
+	Author_ID int    `json:"author_id"`
+	Content   string `json:"content"`
+}
 
 func (*Article) GetAll() ([]Article, error) {
 	var List []Article
@@ -75,5 +79,27 @@ func (x *Article) GetByID(c *gin.Context) error {
 	x.Article_ID = articles_id
 	x.Author_ID = author_id
 	x.Content = content
+	return nil
+}
+
+func (atc *Article_creation) InsertToDB() error {
+	db := database.GetInstance()
+	strQuery :=
+		"INSERT INTO `Table` (author_id, content) Values(?,?);"
+	_, err := db.Query(strQuery, strconv.Itoa(atc.Author_ID), atc.Content)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	return nil
+}
+
+func (*Article) CreateItem(List []Article_creation) error {
+	for _, atc := range List {
+		if err := atc.InsertToDB(); err != nil {
+			log.Fatal(err)
+			return err
+		}
+	}
 	return nil
 }
