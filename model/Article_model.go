@@ -103,3 +103,45 @@ func (*Article) CreateItem(List []Article_creation) error {
 	}
 	return nil
 }
+
+func (*Article) DeleteArticleByID(id int) error {
+	db := database.GetInstance()
+	strQuery := "DELETE FROM `Table` WHERE id = ?"
+	_, err := db.Query(strQuery, id)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	return nil
+}
+
+func (a *Article) DeleteArticles(Ids []int) error {
+	for _, id := range Ids {
+		err := a.DeleteArticleByID(id)
+		if err != nil {
+			log.Fatal(err)
+			return err
+		}
+	}
+	return nil
+}
+
+type Article_updating struct {
+	Content string `json:"content"`
+}
+
+func (a *Article_updating) UpdateByID(ctx *gin.Context) error {
+	db := database.GetInstance()
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	strQuery := "Update `Table` SET content = ? WHERE id = ?"
+	_, err = db.Query(strQuery, a.Content, id)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	return nil
+}
