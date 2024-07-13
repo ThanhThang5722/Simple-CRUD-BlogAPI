@@ -11,7 +11,7 @@ func ArticleRouter(r *gin.RouterGroup) {
 	{
 		articleRouter.GET("/", handler.GetAllArticles)
 		articleRouter.GET("/:id", handler.GetArticleByID)
-		//articleRouter.POST("/")
+		articleRouter.POST("/", handler.CreateManyPosts)
 		//articleRouter.POST("/", handlers.CreateManyArticle)
 		//articleRouter.GET("/all", handlers.GetAllArticles)
 		//articleRouter.GET("/all/topics", handlers.GetAllArticlesByTopic)

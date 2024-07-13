@@ -4,7 +4,6 @@ import (
 	database "BlogAPI/pkg/database"
 	"BlogAPI/routes"
 	"fmt"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
@@ -17,7 +16,6 @@ func main() {
 		return
 	}
 	defer db.Close()
-	defer fmt.Println(os.Getenv("test"))
 
 	router := gin.Default()
 	api := router.Group("/api")
