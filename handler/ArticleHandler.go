@@ -58,55 +58,47 @@ func CreateManyPosts(ctx *gin.Context) {
 	}))
 }
 
-/*
-func CreateManyArticle(ctx *gin.Context) {
-	var urls []string
-	body, err := ioutil.ReadAll(ctx.Request.Body)
+func DeleteArticles(ctx *gin.Context) {
+	var ListIdDel []int
+	body, err := io.ReadAll(ctx.Request.Body)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest,
-			models.ErrorResponse("Fail read to articles info 1"))
+		log.Fatal(err)
+		ctx.JSON(http.StatusBadRequest, model.ErrorResponse("Fail to read"))
 		return
 	}
 
-	err = json.Unmarshal(body, &urls)
+	err = json.Unmarshal(body, &ListIdDel)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest,
-			models.ErrorResponse("Fail to read articles info 2"))
+		log.Fatal(err)
+		ctx.JSON(http.StatusBadRequest, model.ErrorResponse("Unmarshal Error"))
 		return
 	}
-
-
-	var a models.Article
-	articles, _ := a.CreateMany(urls)
-
-	ctx.JSON(http.StatusAccepted,
-		models.SuccessResponse("Created articles successfully", gin.H{
-			"articles": articles,
-		}))
+	var a model.Article
+	if err = a.DeleteArticles(ListIdDel); err != nil {
+		log.Fatal(err)
+		ctx.JSON(http.StatusBadRequest, model.ErrorResponse("Can't Delete"))
+		return
+	}
+	ctx.JSON(http.StatusOK, model.SuccessResponse("Deleted articles successfully", gin.H{
+		"Status": "Success",
+	}))
 }
-func CreateItem(db *gorm.DB) func(*gin.Context) {
-	return func(c *gin.Context) {
-		var data TodoItemCreation
 
-		if err := c.ShouldBind(&data); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-
-			return
-		}
-
-		if err := db.Create(&data).Error; err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"status": data.Status,
-				"error":  err.Error(),
-			})
-
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{
-			"data": data.Id,
+func UpdateContent(ctx *gin.Context) {
+	var a model.Article_updating
+	if err := ctx.ShouldBind(&a); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
 		})
+
+		return
 	}
+	err := a.UpdateByID(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse("Fail to get article by id"))
+		return
+	}
+	ctx.JSON(http.StatusOK, model.SuccessResponse("Update article's content successfully", gin.H{
+		"status": "success",
+	}))
 }
-*/
