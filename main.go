@@ -1,6 +1,7 @@
 package main
 
 import (
+	"BlogAPI/pkg/auth"
 	database "BlogAPI/pkg/database"
 	"BlogAPI/routes"
 	"fmt"
@@ -17,6 +18,8 @@ func main() {
 	}
 	defer db.Close()
 
+	auth.GenerateJWTKey()
+
 	router := gin.Default()
 	api := router.Group("/api")
 	{
@@ -28,5 +31,6 @@ func main() {
 	}
 	//ROUTER DEFINE
 	routes.ArticleRouter(api)
+	routes.UserRouter(api)
 	router.Run()
 }
