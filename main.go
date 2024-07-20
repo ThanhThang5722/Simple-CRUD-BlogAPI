@@ -3,6 +3,7 @@ package main
 import (
 	"BlogAPI/pkg/auth"
 	database "BlogAPI/pkg/database"
+	"BlogAPI/pkg/middleware"
 	"BlogAPI/routes"
 	"fmt"
 
@@ -21,6 +22,7 @@ func main() {
 	auth.GenerateJWTKey()
 
 	router := gin.Default()
+	router.Use(middleware.CorsMiddleware)
 	api := router.Group("/api")
 	{
 		api.GET("/", func(ctx *gin.Context) {
