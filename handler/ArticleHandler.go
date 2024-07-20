@@ -2,10 +2,12 @@ package handler
 
 import (
 	"BlogAPI/model"
+	"BlogAPI/pkg/auth"
 	"encoding/json"
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -85,6 +87,20 @@ func DeleteArticles(ctx *gin.Context) {
 }
 
 func UpdateContent(ctx *gin.Context) {
+	token := auth.GetTokenString(ctx)
+	claims, err := auth.ParseToken(token)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized,
+			model.ErrorResponse("Invalid token"))
+		return
+	}
+	article_id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+	}
+
 	var a model.Article_updating
 	if err := ctx.ShouldBind(&a); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -93,7 +109,7 @@ func UpdateContent(ctx *gin.Context) {
 
 		return
 	}
-	err := a.UpdateByID(ctx)
+	err = a.UpdateByID(claims.ID, article_id)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse("Fail to get article by id"))
 		return
@@ -102,3 +118,29 @@ func UpdateContent(ctx *gin.Context) {
 		"status": "success",
 	}))
 }
+
+/*
+func GetUser(ctx *gin.Context) {
+	token := auth.GetTokenString(ctx)
+	claims, err := auth.ParseToken(token)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized,
+			models.ErrorResponse("Invalid token"))
+		return
+	}
+
+	user := models.User{}
+	err = user.GetOne("_id", claims.ID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError,
+			models.ErrorResponse("Fail to get user"))
+		return
+	}
+
+	// Hide password
+	user.Password = "*"
+
+	ctx.JSON(http.StatusOK,
+		models.SuccessResponse("Get user successfully", gin.H{"user": user}))
+}
+*/

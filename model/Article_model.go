@@ -130,15 +130,10 @@ type Article_updating struct {
 	Content string `json:"content"`
 }
 
-func (a *Article_updating) UpdateByID(ctx *gin.Context) error {
+func (a *Article_updating) UpdateByID(author_id int, id int) error {
 	db := database.GetInstance()
-	id, err := strconv.Atoi(ctx.Param("id"))
-	if err != nil {
-		log.Fatal(err)
-		return err
-	}
-	strQuery := "Update `Table` SET content = ? WHERE id = ?"
-	_, err = db.Query(strQuery, a.Content, id)
+	strQuery := "Update `Table` SET content = ? WHERE author_id = ? and id = ?"
+	_, err := db.Query(strQuery, a.Content, author_id, id)
 	if err != nil {
 		log.Fatal(err)
 		return err
