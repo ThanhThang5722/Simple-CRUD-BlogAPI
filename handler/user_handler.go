@@ -77,7 +77,7 @@ func Login(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, model.ErrorResponse("Wrong Password!"))
 		return
 	}
-	expireTime := time.Now().Add(time.Minute * 5).Unix()
+	expireTime := time.Now().Add(time.Minute * 1).Unix()
 	claims := auth.Claims{
 		ID: *user.ID,
 	}
@@ -107,4 +107,38 @@ func GetUserByUsername(ctx *gin.Context) {
 		"username": user.UserName,
 		"ID":       user.ID,
 	})
+} /*
+func GetUser(ctx *gin.Context) {
+	token := auth.GetTokenString(ctx)
+	claims, err := auth.ParseToken(token)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, model.ErrorResponse("Invalid token"))
+		return
+	}
+	user := model.User{}
+	res, err = user.CheckIfExist("id", strconv.claims.ID)
 }
+func GetUser(ctx *gin.Context) {
+	token := auth.GetTokenString(ctx)
+	claims, err := auth.ParseToken(token)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized,
+			models.ErrorResponse("Invalid token"))
+		return
+	}
+
+	user := models.User{}
+	err = user.GetOne("_id", claims.ID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError,
+			models.ErrorResponse("Fail to get user"))
+		return
+	}
+
+	// Hide password
+	user.Password = "*"
+
+	ctx.JSON(http.StatusOK,
+		models.SuccessResponse("Get user successfully", gin.H{"user": user}))
+}
+*/
